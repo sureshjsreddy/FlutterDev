@@ -112,7 +112,7 @@ class _TorchHomePageState extends State<TorchHomePage> {
                   Align(
                     alignment: Alignment.center,
                     child: Transform.translate(
-                      offset: const Offset(0, -114),
+                      offset: const Offset(0, -114), 
                       child: Container(
                         width: 15,
                         height: 15,
