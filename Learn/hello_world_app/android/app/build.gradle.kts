@@ -1,3 +1,20 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.13.1") // Or your current core-ktx version
+    implementation("androidx.appcompat:appcompat:1.7.0") // Or your current appcompat version
+    // ... other dependencies ...
+
+    // Add this line for Play Core
+    implementation("com.google.android.play:core:1.10.3") // Or the latest stable version
+
+    // If you are using Kotlin specific Play Core features (usually not needed if just for Flutter's usage)
+    // implementation("com.google.android.play:core-ktx:1.8.1")
+
+    // ... flutterImplementation, etc.
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,8 +22,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Load keystore properties
+val keystorePropertiesFile = rootProject.file("key.properties") // Ensure this path is correct
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) { // .exists() here is fine (from java.io.File)
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
-    namespace = "com.example.hello_world_app"
+    namespace = "com.sureshdevs.retro_torch"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -20,21 +44,40 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.sureshjsreddy.torchlight"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        applicationId = "com.sureshdevs.retro_torch"
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists() &&
+                keystoreProperties.containsKey("storeFile") &&
+                keystoreProperties.containsKey("storePassword") &&
+                keystoreProperties.containsKey("keyAlias") &&
+                keystoreProperties.containsKey("keyPassword")) {
+
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            } else {
+                println("Warning: Release signing config not found or incomplete in key.properties. Build may fail.")
+            }
+        }
+    }
+
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        getByName("debug") {
+            isDebuggable = true
         }
     }
 }
