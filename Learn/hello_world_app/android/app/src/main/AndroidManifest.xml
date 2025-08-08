@@ -1,5 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Declare camera permission -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Declare camera and flash features as not strictly required -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+
     <application
         android:label="torch light"
         android:name="${applicationName}"
