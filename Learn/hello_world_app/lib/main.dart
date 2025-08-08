@@ -55,7 +55,7 @@ class _TorchHomePageState extends State<TorchHomePage> {
             _showError(
               'Camera permission is required to use the torch.\nPlease enable it in settings.',
             );
-            return;
+            return; 
           }
           // Retry after permission granted
           await _switchTorch();
